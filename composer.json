@@ -1,0 +1,12 @@
+{
+    "require": {
+        "jeremeamia/superclosure": "1.*",
+        "league/event": "1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Revolve\\Assistant\\": "src",
+            "Revolve\\Assistant\\Test\\": "tests"
+        }
+    }
+}
