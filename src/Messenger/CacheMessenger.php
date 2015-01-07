@@ -1,9 +1,8 @@
 <?php
 
-namespace Revolve\Assistant\Messenger\Cache;
+namespace Revolve\Assistant\Messenger;
 
 use Doctrine\Common\Cache\Cache;
-use Revolve\Assistant\Messenger\Messenger;
 
 abstract class CacheMessenger extends Messenger
 {

@@ -1,19 +1,20 @@
 <?php
 
-namespace Revolve\Assistant\Worker;
+namespace Revolve\Assistant\Provider\Gearman;
 
-use GearmanJob as BaseJob;
-use GearmanWorker as BaseWorker;
-use Revolve\Assistant\ConnectionInterface;
-use Revolve\Assistant\ConnectionTrait;
+use GearmanJob;
+use GearmanWorker;
+use Revolve\Assistant\Connection\ConnectionInterface;
+use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Task\TaskInterface;
+use Revolve\Assistant\Worker\Worker as AbstractWorker;
 
-class GearmanWorker extends Worker implements ConnectionInterface
+class Worker extends AbstractWorker implements ConnectionInterface
 {
     use ConnectionTrait;
 
     /**
-     * @var BaseWorker
+     * @var GearmanWorker
      */
     protected $worker;
 
@@ -34,7 +35,7 @@ class GearmanWorker extends Worker implements ConnectionInterface
 
         $namespace = $this->config["namespace"];
 
-        $this->worker->addFunction($namespace, function (BaseJob $job) {
+        $this->worker->addFunction($namespace, function (GearmanJob $job) {
             $workload = $job->workload();
 
             /** @var TaskInterface $closure */
@@ -60,7 +61,7 @@ class GearmanWorker extends Worker implements ConnectionInterface
         if (!$this->isConnected()) {
             $servers = $this->getServers();
 
-            $this->worker = new BaseWorker();
+            $this->worker = new GearmanWorker();
             $this->worker->addServers($servers);
 
             $this->isConnected = true;

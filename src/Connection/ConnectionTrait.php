@@ -1,6 +1,6 @@
 <?php
 
-namespace Revolve\Assistant;
+namespace Revolve\Assistant\Connection;
 
 use Exception;
 

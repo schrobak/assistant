@@ -1,15 +1,14 @@
 <?php
 
-namespace Revolve\Assistant\Client;
+namespace Revolve\Assistant\Provider\Gearman;
 
-use GearmanClient as BaseClient;
-use Revolve\Assistant\ConnectionInterface;
-use Revolve\Assistant\ConnectionTrait;
-use Revolve\Assistant\Messenger\MessengerInterface;
+use GearmanClient;
+use Revolve\Assistant\Client\Client as AbstractClient;
+use Revolve\Assistant\Connection\ConnectionInterface;
+use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Task\TaskInterface;
-use SplObjectStorage;
 
-class GearmanClient extends Client implements ConnectionInterface
+class Client extends AbstractClient implements ConnectionInterface
 {
     use ConnectionTrait;
 
@@ -17,26 +16,6 @@ class GearmanClient extends Client implements ConnectionInterface
      * @var GearmanClient
      */
     protected $client;
-
-    /**
-     * @var SplObjectStorage
-     */
-    protected $tasks;
-
-    /**
-     * @var array
-     */
-    protected $emitted = [];
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->setConfig($config);
-
-        $this->tasks = new SplObjectStorage();
-    }
 
     /**
      * {@inheritdoc}
@@ -67,36 +46,6 @@ class GearmanClient extends Client implements ConnectionInterface
     }
 
     /**
-     * @param MessengerInterface $messenger
-     *
-     * @return $this
-     */
-    public function read(MessengerInterface $messenger)
-    {
-        foreach ($messenger->read() as $message) {
-            if (in_array($message, $this->emitted)) {
-                continue;
-            }
-
-            $unpacked = unserialize($message);
-
-            foreach ($this->tasks as $task) {
-                if ($unpacked[0] == $task->getId()) {
-                    call_user_func_array([$task, "emit"], array_slice($unpacked, 1));
-
-                    $this->emitted[] = $message;
-                }
-            }
-        }
-
-        if (count($this->emitted) > 100) {
-            $this->emitted = array_slice($this->emitted, count($this->emitted) - 100);
-        }
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function connect()
@@ -104,7 +53,7 @@ class GearmanClient extends Client implements ConnectionInterface
         if (!$this->isConnected()) {
             $servers = $this->getServers();
 
-            $this->client = new BaseClient();
+            $this->client = new GearmanClient();
             $this->client->addServers($servers);
 
             $this->isConnected = true;

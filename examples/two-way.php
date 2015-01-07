@@ -5,12 +5,12 @@
 require "../vendor/autoload.php";
 
 use League\Event\Event;
-use Revolve\Assistant\Client\GearmanClient;
-use Revolve\Assistant\Messenger\Cache\MemcachedCacheMessenger;
-use Revolve\Assistant\Task\GearmanTask;
+use Revolve\Assistant\Provider\Gearman\Client;
+use Revolve\Assistant\Provider\Gearman\Task;
+use Revolve\Assistant\Provider\Memcached\Messenger;
 use Revolve\Assistant\Task\TaskInterface;
 
-$messenger = new MemcachedCacheMessenger([
+$messenger = new Messenger([
     "servers" => [
         ["127.0.0.1", 11211],
     ],
@@ -19,7 +19,7 @@ $messenger = new MemcachedCacheMessenger([
 
 $messenger->connect();
 
-$task = new GearmanTask(function (TaskInterface $task) use ($messenger) {
+$task = new Task(function (TaskInterface $task) use ($messenger) {
     $task->writeTo($messenger, "start", time());
 
     print "writing start\n";
@@ -49,7 +49,7 @@ $task->addListener("complete", function (Event $event, $time) {
     print "completed two-way at: {$time}\n";
 });
 
-$client = new GearmanClient([
+$client = new Client([
     "servers" => [
         ["127.0.0.1", 4730],
     ],

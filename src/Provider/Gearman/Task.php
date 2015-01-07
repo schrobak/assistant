@@ -1,11 +1,12 @@
 <?php
 
-namespace Revolve\Assistant\Task;
+namespace Revolve\Assistant\Provider\Gearman;
 
 use GearmanJob;
 use Revolve\Assistant\Messenger\MessengerInterface;
+use Revolve\Assistant\Task\Task as AbstractTask;
 
-class GearmanTask extends Task
+class Task extends AbstractTask
 {
     /**
      * @var GearmanJob

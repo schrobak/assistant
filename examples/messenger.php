@@ -2,9 +2,9 @@
 
 require "../vendor/autoload.php";
 
-use Revolve\Assistant\Messenger\Cache\MemcachedCacheMessenger;
+use Revolve\Assistant\Provider\Memcached\Messenger;
 
-$messenger = new MemcachedCacheMessenger([
+$messenger = new Messenger([
     "servers" => [
         ["127.0.0.1", 11211],
     ],

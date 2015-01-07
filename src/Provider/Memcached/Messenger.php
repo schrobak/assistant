@@ -1,14 +1,15 @@
 <?php
 
-namespace Revolve\Assistant\Messenger\Cache;
+namespace Revolve\Assistant\Provider\Memcached;
 
 use Doctrine\Common\Cache\MemcachedCache;
 use Exception;
 use Memcached;
-use Revolve\Assistant\ConnectionInterface;
-use Revolve\Assistant\ConnectionTrait;
+use Revolve\Assistant\Connection\ConnectionInterface;
+use Revolve\Assistant\Connection\ConnectionTrait;
+use Revolve\Assistant\Messenger\CacheMessenger;
 
-class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterface
+class Messenger extends CacheMessenger implements ConnectionInterface
 {
     use ConnectionTrait;
 

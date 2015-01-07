@@ -2,9 +2,9 @@
 
 require "../vendor/autoload.php";
 
-use Revolve\Assistant\Worker\GearmanWorker;
+use Revolve\Assistant\Provider\Gearman\Worker;
 
-$worker = new GearmanWorker([
+$worker = new Worker([
     "servers" => [
         ["127.0.0.1", 4730],
     ],
