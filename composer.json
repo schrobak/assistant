@@ -1,8 +1,8 @@
 {
     "require": {
-        "jeremeamia/superclosure": "1.*",
         "league/event": "1.*",
-        "doctrine/cache": "1.*"
+        "doctrine/cache": "1.*",
+        "jeremeamia/superclosure": "1.*"
     },
     "autoload": {
         "psr-4": {

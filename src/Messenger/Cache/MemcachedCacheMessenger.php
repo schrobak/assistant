@@ -19,7 +19,7 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
     protected $isConnected = false;
 
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function connect()
     {
@@ -39,7 +39,7 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
     }
 
     /**
-     * @return $this
+     * {@inheritdoc}
      */
     public function disconnect()
     {
@@ -50,10 +50,20 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isConnected()
     {
         return $this->isConnected;
+    }
+
+    public function __sleep()
+    {
+        return ["config"];
+    }
+
+    public function __wakeup()
+    {
+        $this->connect();
     }
 }

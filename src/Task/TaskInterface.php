@@ -20,7 +20,7 @@ interface TaskInterface extends EmitterInterface
     /**
      * @return array
      */
-    public function getParameters();
+    public function getVariables();
 
     /**
      * @param MessengerInterface $messenger

@@ -37,7 +37,7 @@ abstract class CacheMessenger implements MessengerInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function read()
     {
@@ -67,9 +67,7 @@ abstract class CacheMessenger implements MessengerInterface
     }
 
     /**
-     * @param string $message
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function write($message)
     {
@@ -119,9 +117,7 @@ abstract class CacheMessenger implements MessengerInterface
     }
 
     /**
-     * @param string $message
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function remove($message)
     {
