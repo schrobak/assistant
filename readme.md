@@ -13,6 +13,106 @@ $ cd assistant
 $ vendor/bin/phpunit
 ```
 
+## Tasks and Messengers
+
+```php
+use Revolve\Assistant\Make;
+use Revolve\Assistant\Task\TaskInterface;
+
+$make = new Make();
+
+$messenger = $make->messenger([
+    "provider" => "memcached",
+    "memcached" => [
+        "namespace" => "assistant",
+        "servers" => [
+            ["127.0.0.1", 11211],
+        ],
+    ],
+]);
+
+$task = $make->task([
+    "provider" => "gearman",
+    "callback" => function(TaskInterface $task) use ($messenger) {
+        print "see this in the worker output";
+
+        $task->writeTo($messenger, "output", "see this in the client output");
+    },
+]);
+
+$task->addListener("output", function($message) {
+    print $message;
+});
+```
+
+## Workers
+
+```php
+use Revolve\Assistant\Make;
+
+$make = new Make();
+
+$worker = $make->worker([
+    "provider" => "gearman",
+    "gearman" => [
+        "namespace" => "assistant",
+        "servers" => [
+            ["127.0.0.1", 4730],
+        ],
+    ],
+]);
+
+$worker->run(); // infinite loop, which is ok for the worker!
+```
+
+## Clients
+
+```php
+use Revolve\Assistant\Make;
+
+$make = new Make();
+
+$client = $make->client([
+    "provider" => "gearman",
+    "gearman" => [
+        "namespace" => "assistant",
+        "servers" => [
+            ["127.0.0.1", 4730],
+        ],
+    ]
+]);
+
+$client->handle($task);
+
+do {
+    $client->read($messenger);
+
+    print ".";
+
+    if ($client->hasCompleted($task)) {
+        break;
+    }
+
+    usleep(50000);
+} while (true);
+
+// infinite loop, which is not ok for the client! Use an event loop instead...
+```
+
+## Uni-direction workers (like queues)
+
+```php
+use Revolve\Assistant\Make;
+
+$make = new Make();
+
+$client = $make->client(...)->handle(
+    $make->task(...)
+);
+
+// Queue-like tasks don't need event listeners. They don't need $client->read() or $client->hasCompleted() either...
+```
+
 ## Answers
 
 ### What is this?
