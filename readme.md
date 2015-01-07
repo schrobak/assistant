@@ -145,3 +145,10 @@ Most concurrent, asynchronous extensions don't let you communicate from the work
 ### Infinite loops are blocking, chump!
 
 That's not a question. The examples use infinite loops, and these are blocking. For optimal results, you should use Assistant within an event loop. I built it to work with the [framework](https://github.com/revolvephp/framework), but it works like a charm with any [React](https://github.com/reactphp/react) app.
+
+## Roadmap
+
+- Add more `MessengerInterface` providers: IronMQ, Beanstalkd, Filesystem
+- Add more `TaskInterface` / `ClientInterface` / `WorkerInterface` providers: IronWorker, pThreads
+- Add tests
+- Add documentation
