@@ -66,9 +66,11 @@ $client->handle($task);
 do {
     $client->read($messenger);
 
+    print ".";
+
     if ($client->hasCompleted($task)) {
         break;
     }
 
-    usleep(500);
+    usleep(50000);
 } while (true);

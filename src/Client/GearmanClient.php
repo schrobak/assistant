@@ -2,12 +2,12 @@
 
 namespace Revolve\Assistant\Client;
 
-use SplObjectStorage;
+use GearmanClient as BaseClient;
 use Revolve\Assistant\ConnectionInterface;
 use Revolve\Assistant\ConnectionTrait;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
-use GearmanClient as BaseClient;
+use SplObjectStorage;
 
 class GearmanClient extends Client implements ConnectionInterface
 {
@@ -24,6 +24,11 @@ class GearmanClient extends Client implements ConnectionInterface
     protected $tasks;
 
     /**
+     * @var array
+     */
+    protected $emitted = [];
+
+    /**
      * @param array $config
      */
     public function __construct(array $config)
@@ -32,7 +37,6 @@ class GearmanClient extends Client implements ConnectionInterface
 
         $this->tasks = new SplObjectStorage();
     }
-
 
     /**
      * {@inheritdoc}
@@ -69,18 +73,24 @@ class GearmanClient extends Client implements ConnectionInterface
      */
     public function read(MessengerInterface $messenger)
     {
-        $messages = $messenger->read();
+        foreach ($messenger->read() as $message) {
+            if (in_array($message, $this->emitted)) {
+                continue;
+            }
 
-        foreach ($messages as $message) {
-            $message = unserialize($message);
+            $unpacked = unserialize($message);
 
             foreach ($this->tasks as $task) {
-                if ($message[0] == $task->getId()) {
-                    call_user_func_array([$task, "emit"], array_slice($message, 1));
+                if ($unpacked[0] == $task->getId()) {
+                    call_user_func_array([$task, "emit"], array_slice($unpacked, 1));
 
-                    $messenger->remove(serialize($message));
+                    $this->emitted[] = $message;
                 }
             }
+        }
+
+        if (count($this->emitted) > 100) {
+            $this->emitted = array_slice($this->emitted, count($this->emitted) - 100);
         }
 
         return $this;
