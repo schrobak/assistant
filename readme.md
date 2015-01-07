@@ -110,7 +110,8 @@ $client = $make->client(...)->handle(
     $make->task(...)
 );
 
-// Queue-like tasks don't need event listeners. They don't need $client->read() or $client->hasCompleted() either...
+// Queue-like tasks don't need event listeners.
+// They don't need $client->read() or $client->hasCompleted() either...
 ```
 
 ## Answers
