@@ -36,6 +36,14 @@ abstract class Task extends SerializableClosure implements TaskInterface
     protected $variables;
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEmitter()
+    {
+        return $this->emitter;
+    }
+
+    /**
      * @param callable $closure
      */
     public function __construct(callable $closure)

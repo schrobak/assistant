@@ -2,6 +2,8 @@
 
 namespace Revolve\Assistant;
 
+use League\Event\EmitterInterface;
+
 trait EmitterTrait
 {
     /**
@@ -22,7 +24,7 @@ trait EmitterTrait
      */
     protected function forwardToEmitter($method, array $parameters)
     {
-        return call_user_func_array([$this->emitter, $method], $parameters);
+        return call_user_func_array([$this->getEmitter(), $method], $parameters);
     }
 
     /**
@@ -86,4 +88,9 @@ trait EmitterTrait
     {
         return $this->forwardToEmitter("emitBatch", func_get_args());
     }
+
+    /**
+     * @return EmitterInterface
+     */
+    abstract public function getEmitter();
 }
