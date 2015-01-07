@@ -112,7 +112,7 @@ $client = $make->client(...)->handle(
     $make->task(...)
 );
 
-// sire-and-forget tasks don't need event listeners
+// fire-and-forget tasks don't need event listeners
 // ...or $client->read() or $client->hasCompleted()
 ```
 
