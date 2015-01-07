@@ -1,5 +1,7 @@
 <?php
 
+// For this to work, you need to have memcached and worker.php running
+
 require "../vendor/autoload.php";
 
 use Revolve\Assistant\Messenger\Cache\MemcachedCacheMessenger;
