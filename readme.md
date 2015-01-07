@@ -82,7 +82,7 @@ $client = $make->client([
     ]
 ]);
 
-$client->handle($task);
+$client->handle($make->task(...));
 
 do {
     $client->read($messenger);
