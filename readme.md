@@ -149,6 +149,6 @@ That's not a question. The examples use infinite loops, and these are blocking. 
 ## Roadmap
 
 - Add more `MessengerInterface` providers: IronMQ, Beanstalkd, Filesystem
-- Add more `TaskInterface` / `ClientInterface` / `WorkerInterface` providers: IronWorker, pThreads
+- Add more `TaskInterface`, `ClientInterface`, `WorkerInterface` providers: IronWorker, pThreads
 - Add tests
 - Add documentation
