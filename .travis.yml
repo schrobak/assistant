@@ -1,0 +1,32 @@
+language: php
+php:
+- 5.4
+- 5.5
+- 5.6
+before_script:
+- composer self-update
+- composer install --no-interaction --prefer-dist
+script:
+- vendor/bin/phpunit --coverage-clover coverage.clover --coverage-html coverage
+- wget https://scrutinizer-ci.com/ocular.phar
+- php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+after_success:
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- cp -R coverage ${HOME}/coverage
+- cd ${HOME}
+- git clone --quiet --branch=gh-pages https://${GH_TOKEN}@github.com/revolvephp/assistant.git
+  gh-pages > /dev/null
+- cd gh-pages
+- mkdir ${TRAVIS_BRANCH}
+- cd ${TRAVIS_BRANCH}
+- cp -Rf $HOME/coverage/* .
+- git add -f .
+- git commit -m "Travis pushed coverage of ${TRAVIS_COMMIT}@${TRAVIS_BRANCH} to gh-pages"
+- git push -fq origin gh-pages > /dev/null
+branches:
+  only:
+  - master
+env:
+  global:
+    secure: ezDk4VbPu1cVdLZi16Z24GNv9jRI8EEJ8o0ztr95BwDFT+dyclORu/Po4MhZIGMLQL2E/6YvV23o2UCyKS5fpmyxm4ohlqvI6AzQmJBZyEVsHZgAGVQSpC7I8Zr+0122yGssMgZr3l0UZnPi+B1qGKCWFUlWuvt8eavHPsJiDBs=
