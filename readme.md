@@ -13,6 +13,14 @@ $ cd assistant
 $ vendor/bin/phpunit
 ```
 
+## Installing
+
+```sh
+$ composer require "revolvephp/assistant:dev-master"
+```
+
+This is not stable or tested enough to tag a release. Sorry folks!
+
 ## Tasks and Messengers
 
 ```php
