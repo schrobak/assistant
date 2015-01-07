@@ -45,7 +45,7 @@ abstract class Task extends SerializableClosure implements TaskInterface
     }
 
     /**
-     * @return string|null
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -53,9 +53,7 @@ abstract class Task extends SerializableClosure implements TaskInterface
     }
 
     /**
-     * @param string $id
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setId($id)
     {
@@ -65,7 +63,7 @@ abstract class Task extends SerializableClosure implements TaskInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getCode()
     {
@@ -82,12 +80,20 @@ abstract class Task extends SerializableClosure implements TaskInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getVariables()
     {
         $this->cache();
 
         return $this->variables;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getId();
     }
 }

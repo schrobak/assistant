@@ -13,6 +13,8 @@ $messenger = new MemcachedCacheMessenger([
 
 $messenger->connect();
 
+// $messenger = unserialize(serialize($messenger));
+//
 // var_dump($messenger->read());
 //
 // $messenger->write("foo");

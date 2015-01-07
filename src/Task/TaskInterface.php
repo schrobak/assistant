@@ -13,6 +13,13 @@ interface TaskInterface extends EmitterInterface
     public function getId();
 
     /**
+     * @param string $id
+     *
+     * @return $this
+     */
+    public function setId($id);
+
+    /**
      * @return string
      */
     public function getCode();
@@ -24,11 +31,10 @@ interface TaskInterface extends EmitterInterface
 
     /**
      * @param MessengerInterface $messenger
-     * @param array              $parameters
      *
      * @return $this
      */
-    public function write(MessengerInterface $messenger, array $parameters = []);
+    public function writeTo(MessengerInterface $messenger);
 
     /**
      * @return mixed

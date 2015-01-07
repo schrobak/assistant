@@ -6,26 +6,24 @@ use Exception;
 use GearmanJob as BaseJob;
 use GearmanWorker as BaseWorker;
 use Revolve\Assistant\ConnectionInterface;
+use Revolve\Assistant\ConnectionTrait;
 use Revolve\Assistant\Task\TaskInterface;
 
 class GearmanWorker extends Worker implements ConnectionInterface
 {
+    use ConnectionTrait;
+
     /**
      * @var BaseWorker
      */
     protected $worker;
 
     /**
-     * @var bool
-     */
-    protected $isConnected = false;
-
-    /**
      * {@inheritdoc}
      */
     public function handle(TaskInterface $task)
     {
-        $task($task);
+        return $task($task);
     }
 
     /**
@@ -33,7 +31,7 @@ class GearmanWorker extends Worker implements ConnectionInterface
      */
     public function run()
     {
-        $this->checkConnection();
+        $this->ensureConnected();
 
         $namespace = $this->config["namespace"];
 
@@ -43,24 +41,16 @@ class GearmanWorker extends Worker implements ConnectionInterface
             /** @var TaskInterface $closure */
             $task = unserialize($workload);
 
+            $task->setJob($job);
+
             $this->handle($task);
         });
 
         while ($this->worker->work()) {
-            ;
+            // do nothing here
         }
-    }
 
-    /**
-     * @throws Exception
-     */
-    protected function checkConnection()
-    {
-        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
-
-        if ($isConnection and !$this->isConnected()) {
-            throw new Exception("You need to connect first!");
-        }
+        return $this;
     }
 
     /**
@@ -68,7 +58,7 @@ class GearmanWorker extends Worker implements ConnectionInterface
      */
     public function connect()
     {
-        if (!$this->isConnected) {
+        if (!$this->isConnected()) {
             $servers = $this->getServers();
 
             $this->worker = new BaseWorker();
@@ -76,6 +66,8 @@ class GearmanWorker extends Worker implements ConnectionInterface
 
             $this->isConnected = true;
         }
+
+        return $this;
     }
 
     /**
@@ -99,17 +91,11 @@ class GearmanWorker extends Worker implements ConnectionInterface
      */
     public function disconnect()
     {
-        if ($this->isConnected) {
+        if ($this->isConnected()) {
             $this->worker = null;
             $this->isConnected = false;
         }
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isConnected()
-    {
-        return $this->isConnected;
+        return $this;
     }
 }

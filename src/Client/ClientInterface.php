@@ -19,14 +19,7 @@ interface ClientInterface
      *
      * @return bool
      */
-    public function isProcessing(TaskInterface $task);
-
-    /**
-     * @param TaskInterface $task
-     *
-     * @return bool
-     */
-    public function hasProcessed(TaskInterface $task);
+    public function hasCompleted(TaskInterface $task);
 
     /**
      * @param MessengerInterface $messenger

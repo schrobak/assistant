@@ -2,44 +2,34 @@
 
 namespace Revolve\Assistant\Messenger\Cache;
 
-use Exception;
 use Doctrine\Common\Cache\MemcachedCache;
+use Exception;
 use Memcached;
 use Revolve\Assistant\ConnectionInterface;
+use Revolve\Assistant\ConnectionTrait;
 
 class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterface
 {
+    use ConnectionTrait;
+
     /**
      * @var Memcached
      */
     protected $memcached;
 
     /**
-     * @var bool
-     */
-    protected $isConnected = false;
-
-    /**
      * {@inheritdoc}
      */
     public function disconnect()
     {
-        if ($this->isConnected) {
+        if ($this->isConnected()) {
             $this->memcached->quit();
+            $this->memcached = null;
+
             $this->isConnected = false;
         }
-    }
 
-    public function __sleep()
-    {
-        return ["config", "isConnected"];
-    }
-
-    public function __wakeup()
-    {
-        if ($this->isConnected) {
-            $this->connect();
-        }
+        return $this;
     }
 
     /**
@@ -60,6 +50,8 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
 
             $this->isConnected = true;
         }
+
+        return $this;
     }
 
     /**
@@ -69,29 +61,9 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
      */
     public function read()
     {
-        $this->checkConnection();
+        $this->ensureConnected();
 
         return parent::read();
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function checkConnection()
-    {
-        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
-
-        if ($isConnection and !$this->isConnected()) {
-            throw new Exception("You need to connect first!");
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isConnected()
-    {
-        return $this->isConnected;
     }
 
     /**
@@ -101,7 +73,7 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
      */
     public function write($message)
     {
-        $this->checkConnection();
+        $this->ensureConnected();
 
         return parent::write($message);
     }
@@ -113,7 +85,7 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
      */
     public function remove($message)
     {
-        $this->checkConnection();
+        $this->ensureConnected();
 
         return parent::remove($message);
     }

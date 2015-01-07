@@ -46,12 +46,17 @@ class GearmanTask extends Task
 
     /**
      * @param MessengerInterface $messenger
-     * @param array              $parameters
      *
      * @return $this
      */
-    public function write(MessengerInterface $messenger, array $parameters = [])
+    public function writeTo(MessengerInterface $messenger)
     {
-        // TODO: Implement write() method.
+        $parameters = array_slice(func_get_args(), 1);
+
+        array_unshift($parameters, $this->getId());
+
+        $messenger->write(serialize($parameters));
+
+        return $this;
     }
 }

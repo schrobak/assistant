@@ -9,7 +9,7 @@ interface WorkerInterface
     /**
      * @param TaskInterface $task
      *
-     * @return $this
+     * @return mixed
      */
     public function handle(TaskInterface $task);
 
