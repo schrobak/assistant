@@ -75,6 +75,18 @@ abstract class CacheMessenger extends Messenger
 
     /**
      * @param string $key
+     */
+    protected function addKey($key)
+    {
+        $keys = $this->cache->fetch("keys");
+
+        $keys[] = $key;
+
+        $this->cache->save("keys", $keys);
+    }
+
+    /**
+     * @param string $key
      * @param string $message
      *
      * @return string
@@ -84,18 +96,6 @@ abstract class CacheMessenger extends Messenger
         $this->cache->save($key, $message);
 
         return $key;
-    }
-
-    /**
-     * @param string $key
-     */
-    protected function addKey($key)
-    {
-        $keys = $this->cache->fetch("keys");
-
-        $keys[] = $key;
-
-        $this->cache->save("keys", $keys);
     }
 
     /**

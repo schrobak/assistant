@@ -13,6 +13,14 @@ class GearmanTask extends Task
     protected $job;
 
     /**
+     * @return GearmanJob
+     */
+    public function getJob()
+    {
+        return $this->job;
+    }
+
+    /**
      * @param GearmanJob $job
      *
      * @return $this
@@ -22,26 +30,6 @@ class GearmanTask extends Task
         $this->job = $job;
 
         return $this;
-    }
-
-    /**
-     * @return GearmanJob
-     */
-    public function getJob()
-    {
-        return $this->job;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        if ($this->job) {
-            return $this->job->handle();
-        }
-
-        return parent::getId();
     }
 
     /**
@@ -58,5 +46,17 @@ class GearmanTask extends Task
         $messenger->write(serialize($parameters));
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        if ($this->job) {
+            return $this->job->handle();
+        }
+
+        return parent::getId();
     }
 }

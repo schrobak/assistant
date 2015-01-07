@@ -8,7 +8,7 @@ $messenger = new MemcachedCacheMessenger([
     "servers" => [
         ["127.0.0.1", 11211],
     ],
-    "namespace" => "assistant"
+    "namespace" => "assistant",
 ]);
 
 $messenger->connect();

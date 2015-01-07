@@ -2,7 +2,6 @@
 
 namespace Revolve\Assistant\Worker;
 
-use Exception;
 use GearmanJob as BaseJob;
 use GearmanWorker as BaseWorker;
 use Revolve\Assistant\ConnectionInterface;

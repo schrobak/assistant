@@ -2,8 +2,8 @@
 
 namespace Revolve\Assistant\Client;
 
-use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Messenger\MessengerInterface;
+use Revolve\Assistant\Task\TaskInterface;
 
 interface ClientInterface
 {

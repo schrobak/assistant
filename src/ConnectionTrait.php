@@ -11,26 +11,6 @@ trait ConnectionTrait
      */
     protected $isConnected = false;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isConnected()
-    {
-        return $this->isConnected;
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function ensureConnected()
-    {
-        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
-
-        if ($isConnection and !$this->isConnected()) {
-            throw new Exception("You need to connect first!");
-        }
-    }
-
     public function __sleep()
     {
         return ["config", "isConnected"];
@@ -49,4 +29,24 @@ trait ConnectionTrait
      * @return $this
      */
     abstract public function connect();
+
+    /**
+     * @throws Exception
+     */
+    protected function ensureConnected()
+    {
+        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
+
+        if ($isConnection and !$this->isConnected()) {
+            throw new Exception("You need to connect first!");
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isConnected()
+    {
+        return $this->isConnected;
+    }
 }

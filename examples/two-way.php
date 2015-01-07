@@ -4,21 +4,22 @@
 
 require "../vendor/autoload.php";
 
+use League\Event\Event;
+use Revolve\Assistant\Client\GearmanClient;
 use Revolve\Assistant\Messenger\Cache\MemcachedCacheMessenger;
+use Revolve\Assistant\Task\GearmanTask;
+use Revolve\Assistant\Task\TaskInterface;
 
 $messenger = new MemcachedCacheMessenger([
     "servers" => [
         ["127.0.0.1", 11211],
     ],
-    "namespace" => "assistant"
+    "namespace" => "assistant",
 ]);
 
 $messenger->connect();
 
-use Revolve\Assistant\Task\GearmanTask;
-use Revolve\Assistant\Task\TaskInterface;
-
-$task = new GearmanTask(function(TaskInterface $task) use ($messenger) {
+$task = new GearmanTask(function (TaskInterface $task) use ($messenger) {
     $task->writeTo($messenger, "start", time());
 
     print "writing start\n";
@@ -36,21 +37,17 @@ $task = new GearmanTask(function(TaskInterface $task) use ($messenger) {
     print "writing complete\n";
 });
 
-use League\Event\Event;
-
-$task->addListener("start", function(Event $event, $time) {
+$task->addListener("start", function (Event $event, $time) {
     print "started two-way at: {$time}\n";
 });
 
-$task->addListener("tick", function(Event $event, $tick) {
+$task->addListener("tick", function (Event $event, $tick) {
     print "two-way tick: {$tick}\n";
 });
 
-$task->addListener("complete", function(Event $event, $time) {
+$task->addListener("complete", function (Event $event, $time) {
     print "completed two-way at: {$time}\n";
 });
-
-use Revolve\Assistant\Client\GearmanClient;
 
 $client = new GearmanClient([
     "servers" => [
