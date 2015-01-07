@@ -3,6 +3,7 @@
 namespace Revolve\Assistant;
 
 use Exception;
+use ReflectionClass;
 use Revolve\Assistant\Client\ClientInterface;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
@@ -71,7 +72,13 @@ class Make
                     $provider = new $value($config[$type]);
                 }
 
-                if (is_subclass_of($provider, "Revolve\\Assistant\\Connection\\ConnectionInterface")) {
+                $reflection = new ReflectionClass($provider);
+
+                $isConnection = $reflection->implementsInterface(
+                    "Revolve\\Assistant\\Connection\\ConnectionInterface"
+                );
+
+                if ($isConnection) {
                     /** @var ConnectionInterface $provider */
                     $provider->connect();
                 }
