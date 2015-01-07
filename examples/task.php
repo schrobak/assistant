@@ -1,8 +1,9 @@
 <?php
 
-require "vendor/autoload.php";
+require "../vendor/autoload.php";
 
 use Revolve\Assistant\Messenger\Cache\MemcachedCacheMessenger;
+use Revolve\Assistant\Task\GearmanTask;
 
 $messenger = new MemcachedCacheMessenger([
     "servers" => [
@@ -11,30 +12,11 @@ $messenger = new MemcachedCacheMessenger([
     "namespace" => "assistant"
 ]);
 
-$messenger->connect();
-
-// var_dump($messenger->read());
-//
-// $messenger->write("foo");
-// $messenger->write("bar");
-// $messenger->write("baz");
-//
-// var_dump($messenger->read());
-//
-// $messenger->remove("foo");
-// $messenger->remove("bar");
-// $messenger->remove("baz");
-//
-// var_dump($messenger->read());
-//
-// $messenger->disconnect();
-
-
-use Revolve\Assistant\Task\GearmanTask;
-
 $task = new GearmanTask(function() use ($messenger) {
     print "hi!";
 });
+
+$messenger->connect();
 
 // var_dump($task->getCode());
 // var_dump($task->getVariables());

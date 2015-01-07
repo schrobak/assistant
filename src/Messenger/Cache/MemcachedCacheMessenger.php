@@ -2,6 +2,7 @@
 
 namespace Revolve\Assistant\Messenger\Cache;
 
+use Exception;
 use Doctrine\Common\Cache\MemcachedCache;
 use Memcached;
 use Revolve\Assistant\ConnectionInterface;
@@ -17,6 +18,29 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
      * @var bool
      */
     protected $isConnected = false;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function disconnect()
+    {
+        if ($this->isConnected) {
+            $this->memcached->quit();
+            $this->isConnected = false;
+        }
+    }
+
+    public function __sleep()
+    {
+        return ["config", "isConnected"];
+    }
+
+    public function __wakeup()
+    {
+        if ($this->isConnected) {
+            $this->connect();
+        }
+    }
 
     /**
      * {@inheritdoc}
@@ -40,12 +64,25 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
 
     /**
      * {@inheritdoc}
+     *
+     * @throws Exception
      */
-    public function disconnect()
+    public function read()
     {
-        if ($this->isConnected) {
-            $this->memcached->quit();
-            $this->isConnected = false;
+        $this->checkConnection();
+
+        return parent::read();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function checkConnection()
+    {
+        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
+
+        if ($isConnection and !$this->isConnected()) {
+            throw new Exception("You need to connect first!");
         }
     }
 
@@ -57,13 +94,27 @@ class MemcachedCacheMessenger extends CacheMessenger implements ConnectionInterf
         return $this->isConnected;
     }
 
-    public function __sleep()
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function write($message)
     {
-        return ["config"];
+        $this->checkConnection();
+
+        return parent::write($message);
     }
 
-    public function __wakeup()
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function remove($message)
     {
-        $this->connect();
+        $this->checkConnection();
+
+        return parent::remove($message);
     }
 }

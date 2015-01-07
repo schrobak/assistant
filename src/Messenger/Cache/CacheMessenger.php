@@ -3,16 +3,10 @@
 namespace Revolve\Assistant\Messenger\Cache;
 
 use Doctrine\Common\Cache\Cache;
-use Exception;
-use Revolve\Assistant\Messenger\MessengerInterface;
+use Revolve\Assistant\Messenger\Messenger;
 
-abstract class CacheMessenger implements MessengerInterface
+abstract class CacheMessenger extends Messenger
 {
-    /**
-     * @var array
-     */
-    protected $config;
-
     /**
      * @var Cache
      */
@@ -29,20 +23,10 @@ abstract class CacheMessenger implements MessengerInterface
     protected $id = 0;
 
     /**
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function read()
     {
-        $this->checkConnection();
-
         if ($keys = $this->cache->fetch("keys")) {
             return $this->fetchAllWith($keys);
         }
@@ -71,8 +55,6 @@ abstract class CacheMessenger implements MessengerInterface
      */
     public function write($message)
     {
-        $this->checkConnection();
-
         $key = $this->getNewKey();
 
         $this->addKey($key);
@@ -121,8 +103,6 @@ abstract class CacheMessenger implements MessengerInterface
      */
     public function remove($message)
     {
-        $this->checkConnection();
-
         $keys = [];
 
         if ($stored = $this->cache->fetch("keys")) {
@@ -144,17 +124,5 @@ abstract class CacheMessenger implements MessengerInterface
         $this->cache->save("keys", $new);
 
         return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function checkConnection()
-    {
-        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
-
-        if ($isConnection and !$this->isConnected()) {
-            throw new Exception("You need to connect first!");
-        }
     }
 }

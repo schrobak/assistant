@@ -29,4 +29,9 @@ interface TaskInterface extends EmitterInterface
      * @return $this
      */
     public function write(MessengerInterface $messenger, array $parameters = []);
+
+    /**
+     * @return mixed
+     */
+    public function __invoke();
 }
