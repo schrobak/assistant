@@ -35,7 +35,7 @@ trait ConnectionTrait
      */
     protected function ensureConnected()
     {
-        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\ConnectionInterface");
+        $isConnection = is_subclass_of($this, "Revolve\\Assistant\\Connection\\ConnectionInterface");
 
         if ($isConnection and !$this->isConnected()) {
             throw new Exception("You need to connect first!");
