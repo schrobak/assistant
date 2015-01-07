@@ -21,7 +21,7 @@ It's an abstraction for non-blocking tools and workflows. It's a wrapper around 
 
 ### Why not use queues?
 
-Queues are a different think. They are often used to get blocking tasks out of the request/response cycle, but they are uni-directional. There's no way to get progress or completion events.
+Queues are a different thing. They are often used to get blocking tasks out of the request/response cycle, but they are uni-directional. There's no way to get progress or completion events.
 
 ### What is the messenger for?
 
