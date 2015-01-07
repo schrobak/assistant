@@ -72,6 +72,8 @@ use Revolve\Assistant\Make;
 
 $make = new Make();
 
+$task = $make->task(...);
+
 $client = $make->client([
     "provider" => "gearman",
     "gearman" => [
@@ -82,7 +84,7 @@ $client = $make->client([
     ]
 ]);
 
-$client->handle($make->task(...));
+$client->handle($task);
 
 do {
     $client->read($messenger);
