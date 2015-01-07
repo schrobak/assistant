@@ -5,6 +5,8 @@
 [![Coverage](http://img.shields.io/scrutinizer/coverage/g/revolvephp/assistant.svg?style=flat-square)](http://revolvephp.github.io/assistant/master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](license.md)
 
+![flow](flow.png)
+
 ## Testing
 
 ```sh
