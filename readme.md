@@ -101,7 +101,7 @@ do {
 // infinite loop, which is not ok for the client! Use an event loop instead...
 ```
 
-## Uni-direction workers (like queues)
+## Fire-and-forget tasks
 
 ```php
 use Revolve\Assistant\Make;
@@ -112,7 +112,7 @@ $client = $make->client(...)->handle(
     $make->task(...)
 );
 
-// queue-like tasks don't need event listeners
+// sire-and-forget tasks don't need event listeners
 // ...or $client->read() or $client->hasCompleted()
 ```
 
