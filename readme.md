@@ -138,9 +138,9 @@ It's an abstraction for non-blocking tools and workflows. It's a wrapper around 
 
 Queues are a different thing. They are often used to get blocking tasks out of the request/response cycle, but they are uni-directional. There's no way to get progress or completion events.
 
-### What is the messenger for?
+### What are messengers for?
 
-Most concurrent, asynchronous extensions don't let you communicate from the worker to the manager. Some allow you to wait until the worker is done, but that's blocking and poorly supported. The messenger allows this communication is a non-blocking way.
+Many concurrent, asynchronous extensions/libraries don't let you communicate from the worker back to the manager. Some allow you to wait until the worker is done, but that's blocking and poorly supported. The messenger allows this communication is a non-blocking way.
 
 ### Infinite loops are blocking, chump!
 
