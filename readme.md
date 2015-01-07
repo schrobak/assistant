@@ -150,5 +150,5 @@ That's not a question. The examples use infinite loops, and these are blocking. 
 
 - Add tests
 - Add `MessengerInterface` providers: IronMQ, Beanstalkd, Filesystem
-- Add `TaskInterface`, `ClientInterface`, `WorkerInterface` providers: IronWorker, pThreads
+- Add `TaskInterface`/`ClientInterface`/`WorkerInterface` providers: IronWorker, pThreads
 - Add documentation
