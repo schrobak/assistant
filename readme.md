@@ -144,7 +144,9 @@ Many concurrent, asynchronous extensions/libraries don't let you communicate fro
 
 ### Infinite loops are blocking, chump!
 
-That's not a question. The examples use infinite loops, and these are blocking. For optimal results, you should use Assistant within an event loop. I built it to work with the [framework](https://github.com/revolvephp/framework), but it works like a charm with any [React](https://github.com/reactphp/react) app.
+That's not a question.
+
+The examples use infinite loops, and these are blocking. For optimal results, you should use Assistant within an event loop. I built it to work with the [framework](https://github.com/revolvephp/framework), but it works like a charm with any [React](https://github.com/reactphp/react) app.
 
 ## Roadmap
 
