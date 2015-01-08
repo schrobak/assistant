@@ -154,3 +154,7 @@ The examples use infinite loops, and these are blocking. For optimal results, yo
 - Add `MessengerInterface` providers: IronMQ, Filesystem
 - Add `TaskInterface`/`ClientInterface`/`WorkerInterface` providers: IronWorker, pThreads
 - Add documentation
+
+## Elsewhere...
+
+- [React-Gearman](https://github.com/bzikarsky/react-gearman)
