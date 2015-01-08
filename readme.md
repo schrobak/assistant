@@ -24,6 +24,7 @@ This is not stable or tested enough to tag a release. Sorry folks!
 ## Tasks and Messengers
 
 ```php
+use League\Event\Event;
 use Revolve\Assistant\Make;
 use Revolve\Assistant\Task\TaskInterface;
 
@@ -48,7 +49,7 @@ $task = $make->task([
     },
 ]);
 
-$task->addListener("output", function($message) {
+$task->addListener("output", function(Event $event, $message) {
     print $message;
 });
 ```
