@@ -9,7 +9,7 @@ $make = new Make();
 $task = $make->task([
     "provider" => "gearman",
     "gearman" => [
-        "callback" => function () {
+        "closure" => function () {
             print "one-way task\n";
         },
     ],

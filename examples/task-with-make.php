@@ -19,16 +19,16 @@ $messenger = $make->messenger([
 $task = $make->task([
     "provider" => "gearman",
     "gearman" => [
-        "callback" => function () use ($messenger) {
+        "closure" => function () use ($messenger) {
             print "hi!";
         },
     ],
 ]);
 
-// var_dump($task->getCode());
-// var_dump($task->getVariables());
-//
-// $variables = $task->getVariables();
-//
-// $messenger = $variables["messenger"];
-// var_dump($messenger->read());
+ var_dump($task->getCode());
+ var_dump($task->getVariables());
+
+ $variables = $task->getVariables();
+
+ $messenger = $variables["messenger"];
+ var_dump($messenger->read());

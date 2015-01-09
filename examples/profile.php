@@ -21,9 +21,11 @@ $start = microtime(true);
 foreach (range(1, 1000) as $tick) {
     $task = $make->task([
         "provider" => "gearman",
-        "callback" => function () {
-            print "profile";
-        },
+        "gearman" => [
+            "closure" => function () {
+                print "profile";
+            },
+        ],
     ]);
 
     $client->handle($task);

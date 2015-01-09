@@ -11,10 +11,10 @@ use Revolve\Assistant\Provider\Memcached\Messenger;
 use Revolve\Assistant\Task\TaskInterface;
 
 $messenger = new Messenger([
+    "namespace" => "assistant",
     "servers" => [
         ["127.0.0.1", 11211],
     ],
-    "namespace" => "assistant",
 ]);
 
 $messenger->connect();
@@ -50,10 +50,10 @@ $task->addListener("complete", function (Event $event, $time) {
 });
 
 $client = new Client([
+    "namespace" => "assistant",
     "servers" => [
         ["127.0.0.1", 4730],
     ],
-    "namespace" => "assistant",
 ]);
 
 $client->connect();

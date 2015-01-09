@@ -4,13 +4,14 @@ namespace Revolve\Assistant\Task;
 
 use Closure;
 use League\Event\PriorityEmitter;
-use Revolve\Assistant\Callback\Callback;
-use Revolve\Assistant\Callback\CallbackInterface;
-use Revolve\Assistant\Callback\CallbackTrait;
+use Revolve\Assistant\Closure\Closure as AbstractClosure;
+use Revolve\Assistant\Closure\ClosureInterface;
+use Revolve\Assistant\MakeAwareInterface;
+use Revolve\Assistant\MakeAwareTrait;
 
-abstract class Task extends Callback implements TaskInterface, CallbackInterface
+abstract class Task extends AbstractClosure implements TaskInterface, ClosureInterface, MakeAwareInterface
 {
-    use CallbackTrait;
+    use MakeAwareTrait;
 
     /**
      * @var PriorityEmitter
@@ -38,10 +39,8 @@ abstract class Task extends Callback implements TaskInterface, CallbackInterface
     public function __construct(Closure $callback = null)
     {
         if ($callback !== null) {
-            $this->setCallback($callback);
+            $this->setClosure($callback);
         }
-
-        $this->emitter = new PriorityEmitter();
     }
 
     /**
@@ -107,6 +106,10 @@ abstract class Task extends Callback implements TaskInterface, CallbackInterface
      */
     protected function forwardToEmitter($method, array $parameters)
     {
+        if (!$this->emitter) {
+            $this->emitter = $this->make()->object("League\\Event\\PriorityEmitter");
+        }
+
         return call_user_func_array([$this->emitter, $method], $parameters);
     }
 

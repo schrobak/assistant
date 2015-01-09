@@ -8,13 +8,10 @@ use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
-use Revolve\Container\ContainerAwareInterface;
-use Revolve\Container\ContainerAwareTrait;
 
-class Client extends AbstractClient implements ConnectionInterface, ContainerAwareInterface
+class Client extends AbstractClient implements ConnectionInterface
 {
     use ConnectionTrait;
-    use ContainerAwareTrait;
 
     /**
      * @var GearmanClient
@@ -59,7 +56,7 @@ class Client extends AbstractClient implements ConnectionInterface, ContainerAwa
         if (!$this->isConnected()) {
             $servers = $this->getServers();
 
-            $this->client = new GearmanClient();
+            $this->client = $this->make()->object("GearmanClient");
             $this->client->addServers($servers);
 
             $this->isConnected = true;

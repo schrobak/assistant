@@ -38,9 +38,21 @@ trait ConnectionTrait
     {
         $reflection = new ReflectionClass($this);
 
-        if ($this->isConnection($reflection) and !$this->isConnected()) {
+        if ($this->isConnectionInterface($reflection) and !$this->isConnected()) {
             throw new ConnectionException("You need to connect first!");
         }
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isConnectionInterface(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\Connection\\ConnectionInterface"
+        );
     }
 
     /**
@@ -49,17 +61,5 @@ trait ConnectionTrait
     public function isConnected()
     {
         return $this->isConnected;
-    }
-
-    /**
-     * @param ReflectionClass $reflection
-     *
-     * @return bool
-     */
-    protected function isConnection(ReflectionClass $reflection)
-    {
-        return $reflection->implementsInterface(
-            "Revolve\\Assistant\\Connection\\ConnectionInterface"
-        );
     }
 }

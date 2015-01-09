@@ -4,12 +4,15 @@ namespace Revolve\Assistant\Client;
 
 use Revolve\Assistant\Config\ConfigInterface;
 use Revolve\Assistant\Config\ConfigTrait;
+use Revolve\Assistant\MakeAwareInterface;
+use Revolve\Assistant\MakeAwareTrait;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use SplObjectStorage;
 
-abstract class Client implements ClientInterface, ConfigInterface
+abstract class Client implements ClientInterface, ConfigInterface, MakeAwareInterface
 {
     use ConfigTrait;
+    use MakeAwareTrait;
 
     /**
      * @var SplObjectStorage
@@ -30,7 +33,7 @@ abstract class Client implements ClientInterface, ConfigInterface
             $this->setConfig($config);
         }
 
-        $this->tasks = new SplObjectStorage();
+        $this->tasks = $this->make()->object("SplObjectStorage");
     }
 
     /**

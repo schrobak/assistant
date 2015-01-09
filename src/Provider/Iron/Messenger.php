@@ -2,18 +2,14 @@
 
 namespace Revolve\Assistant\Provider\Iron;
 
-use IronMQ;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\QueueMessenger;
-use Revolve\Container\ContainerAwareInterface;
-use Revolve\Container\ContainerAwareTrait;
 
-class Messenger extends QueueMessenger implements ConnectionInterface, ContainerAwareInterface
+class Messenger extends QueueMessenger implements ConnectionInterface
 {
     use ConnectionTrait;
-    use ContainerAwareTrait;
 
     /**
      * @var IronMQ
@@ -45,13 +41,13 @@ class Messenger extends QueueMessenger implements ConnectionInterface, Container
     public function connect()
     {
         if (!$this->isConnected) {
-            $token = $this->config["token"];
-            $project = $this->config["project"];
+            $config = [
+                "token" => $this->config["token"],
+                "project_id" => $this->config["project"],
+            ];
 
-            $this->iron = new IronMQ([
-                "token" => $token,
-                "project_id" => $project,
-            ]);
+            $this->iron = $this->make()->object("Revolve\\Assistant\\Provider\\Iron\\IronMQ");
+            $this->iron->setConfig($config);
 
             $this->isConnected = true;
         }

@@ -9,7 +9,7 @@ use Revolve\Assistant\Task\TaskInterface;
 $make = new Make();
 
 $messenger = $make->messenger([
-    "provider" => "iron",
+    "provider" => "memcached",
     "memcached" => [
         "namespace" => "assistant",
         "servers" => [
@@ -26,7 +26,7 @@ $messenger = $make->messenger([
 $task = $make->task([
     "provider" => "gearman",
     "gearman" => [
-        "callback" => function (TaskInterface $task) use ($messenger) {
+        "closure" => function (TaskInterface $task) use ($messenger) {
             $task->writeTo($messenger, "start", time());
 
             print "writing start\n";

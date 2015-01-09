@@ -9,13 +9,10 @@ use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\Worker as AbstractWorker;
-use Revolve\Container\ContainerAwareInterface;
-use Revolve\Container\ContainerAwareTrait;
 
-class Worker extends AbstractWorker implements ConnectionInterface, ContainerAwareInterface
+class Worker extends AbstractWorker implements ConnectionInterface
 {
     use ConnectionTrait;
-    use ContainerAwareTrait;
 
     /**
      * @var GearmanWorker
@@ -67,7 +64,7 @@ class Worker extends AbstractWorker implements ConnectionInterface, ContainerAwa
         if (!$this->isConnected()) {
             $servers = $this->getServers();
 
-            $this->worker = new GearmanWorker();
+            $this->worker = $this->make()->object("GearmanWorker");
             $this->worker->addServers($servers);
 
             $this->isConnected = true;

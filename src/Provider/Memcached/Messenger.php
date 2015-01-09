@@ -2,19 +2,15 @@
 
 namespace Revolve\Assistant\Provider\Memcached;
 
-use Doctrine\Common\Cache\MemcachedCache;
 use Memcached;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\CacheMessenger;
-use Revolve\Container\ContainerAwareInterface;
-use Revolve\Container\ContainerAwareTrait;
 
-class Messenger extends CacheMessenger implements ConnectionInterface, ContainerAwareInterface
+class Messenger extends CacheMessenger implements ConnectionInterface
 {
     use ConnectionTrait;
-    use ContainerAwareTrait;
 
     /**
      * @var Memcached
@@ -45,10 +41,10 @@ class Messenger extends CacheMessenger implements ConnectionInterface, Container
             $servers = $this->config["servers"];
             $namespace = $this->config["namespace"];
 
-            $this->memcached = new Memcached();
+            $this->memcached = $this->make()->object("Memcached");
             $this->memcached->addServers($servers);
 
-            $this->cache = new MemcachedCache();
+            $this->cache = $this->make()->object("Doctrine\\Common\\Cache\\MemcachedCache");
             $this->cache->setMemcached($this->memcached);
             $this->cache->setNamespace($namespace);
 

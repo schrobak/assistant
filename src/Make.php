@@ -2,21 +2,15 @@
 
 namespace Revolve\Assistant;
 
+use Closure;
 use ReflectionClass;
-use Revolve\Assistant\Client\ClientInterface;
+use Revolve\Assistant\Closure\ClosureInterface;
+use Revolve\Assistant\Config\ConfigInterface;
+use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Exception\ProviderException;
-use Revolve\Assistant\Messenger\MessengerInterface;
-use Revolve\Assistant\Task\TaskInterface;
-use Revolve\Assistant\Worker\WorkerInterface;
-use Revolve\Container\Container;
-use Revolve\Container\ContainerAwareInterface;
-use Revolve\Container\ContainerAwareTrait;
-use Revolve\Container\ContainerInterface;
 
-class Make implements ContainerAwareInterface
+class Make implements MakeInterface
 {
-    use ContainerAwareTrait;
-
     /**
      * @var array
      */
@@ -47,42 +41,12 @@ class Make implements ContainerAwareInterface
     ];
 
     /**
-     * @var bool
+     * @var array
      */
-    protected $isBound = false;
+    protected $bound = [];
 
     /**
-     * @param null|ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container = null)
-    {
-        if ($container === null) {
-            $container = new Container();
-
-            $this->bind($container);
-        }
-
-        $this->container = $container;
-    }
-
-    /**
-     * @param ContainerInterface $container
-     */
-    protected function bind(ContainerInterface $container)
-    {
-        $bindings = require __DIR__."/bindings.php";
-
-        foreach ($bindings as $key => $factory) {
-            $container->bind($key, $factory);
-        }
-    }
-
-    /**
-     * @param array $config
-     *
-     * @return ClientInterface
-     *
-     * @throws ProviderException
+     * {@inheritdoc}
      */
     public function client(array $config)
     {
@@ -101,24 +65,23 @@ class Make implements ContainerAwareInterface
     {
         $type = $config["provider"];
 
-        foreach ($providers as $key => $value) {
-            if ($type === $key) {
-                $provider = $this->container->resolve($value);
+        foreach ($providers as $alias => $class) {
+            if ($type === $alias) {
+                $provider = $this->object($class);
 
                 $reflection = new ReflectionClass($provider);
 
-                if ($this->isContainer($reflection)) {
-                    $provider->setContainer($this->container);
-                }
-
-                if ($this->isConfig($reflection)) {
+                if ($this->isConfigInterface($reflection)) {
+                    /** @var $provider ConfigInterface */
                     $provider->setConfig($config[$type]);
                 }
 
-                if ($this->isCallback($reflection)) {
-                    $provider->setCallback($config[$type]["callback"]);
+                if ($this->isClosureInterface($reflection)) {
+                    /** @var $provider ClosureInterface */
+                    $provider->setClosure($config[$type]["closure"]);
                 }
-                if ($this->isConnection($reflection)) {
+                if ($this->isConnectionInterface($reflection)) {
+                    /** @var $provider ConnectionInterface */
                     $provider->connect();
                 }
 
@@ -126,9 +89,7 @@ class Make implements ContainerAwareInterface
             }
         }
 
-        $title = ucfirst($type);
-
-        throw new ProviderException("{$title} provider not recognised");
+        throw new ProviderException("{$type} provider not recognised");
     }
 
     /**
@@ -136,19 +97,7 @@ class Make implements ContainerAwareInterface
      *
      * @return bool
      */
-    protected function isContainer(ReflectionClass $reflection)
-    {
-        return $reflection->implementsInterface(
-            "Revolve\\Container\\ContainerAwareInterface"
-        );
-    }
-
-    /**
-     * @param ReflectionClass $reflection
-     *
-     * @return bool
-     */
-    protected function isConfig(ReflectionClass $reflection)
+    protected function isConfigInterface(ReflectionClass $reflection)
     {
         return $reflection->implementsInterface(
             "Revolve\\Assistant\\Config\\ConfigInterface"
@@ -160,10 +109,10 @@ class Make implements ContainerAwareInterface
      *
      * @return bool
      */
-    protected function isCallback(ReflectionClass $reflection)
+    protected function isClosureInterface(ReflectionClass $reflection)
     {
         return $reflection->implementsInterface(
-            "Revolve\\Assistant\\Callback\\CallbackInterface"
+            "Revolve\\Assistant\\Closure\\ClosureInterface"
         );
     }
 
@@ -172,7 +121,7 @@ class Make implements ContainerAwareInterface
      *
      * @return bool
      */
-    protected function isConnection(ReflectionClass $reflection)
+    protected function isConnectionInterface(ReflectionClass $reflection)
     {
         return $reflection->implementsInterface(
             "Revolve\\Assistant\\Connection\\ConnectionInterface"
@@ -180,23 +129,27 @@ class Make implements ContainerAwareInterface
     }
 
     /**
-     * @param array $config
+     * @param ReflectionClass $reflection
      *
-     * @return TaskInterface
-     *
-     * @throws ProviderException
+     * @return bool
      */
-    public function task(array $config)
+    protected function isMakeAwareInterface(ReflectionClass $reflection)
     {
-        return $this->provider($this->tasks, $config, true);
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\MakeAwareInterface"
+        );
     }
 
     /**
-     * @param array $config
-     *
-     * @return WorkerInterface
-     *
-     * @throws ProviderException
+     * {@inheritdoc}
+     */
+    public function task(array $config)
+    {
+        return $this->provider($this->tasks, $config);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function worker(array $config)
     {
@@ -204,14 +157,54 @@ class Make implements ContainerAwareInterface
     }
 
     /**
-     * @param array $config
-     *
-     * @return MessengerInterface
-     *
-     * @throws ProviderException
+     * {@inheritdoc}
      */
     public function messenger(array $config)
     {
         return $this->provider($this->messengers, $config);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function object($key)
+    {
+        $this->bind();
+
+        $object = null;
+
+        if (isset($this->bound[$key])) {
+            $bound = $this->bound[$key];
+
+            $object = $bound();
+
+            $reflection = new ReflectionClass($object);
+
+            if ($this->isMakeAwareInterface($reflection)) {
+                /** @var MakeAwareInterface $object */
+                $object->setMake($this);
+            }
+        }
+
+        return $object;
+    }
+
+    protected function bind()
+    {
+        if (!$this->bound) {
+            $this->bound = require __DIR__."/bindings.php";
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function swap($key, Closure $factory)
+    {
+        $this->bind();
+
+        $this->bound[$key] = $factory;
+
+        return $this;
     }
 }

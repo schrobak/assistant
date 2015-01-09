@@ -9,10 +9,10 @@ $make = new Make();
 $worker = $make->worker([
     "provider" => "gearman",
     "gearman" => [
+        "namespace" => "assistant",
         "servers" => [
             ["127.0.0.1", 4730],
         ],
-        "namespace" => "assistant",
     ],
 ]);
 
