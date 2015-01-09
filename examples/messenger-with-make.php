@@ -21,8 +21,8 @@ $messenger = $make->messenger([
     ],
 ]);
 
- $messenger = unserialize(serialize($messenger));
-
+// $messenger = unserialize(serialize($messenger));
+//
 // var_dump($messenger->read());
 //
 // $messenger->write("foo");

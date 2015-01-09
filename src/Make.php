@@ -67,8 +67,8 @@ class Make
 
         foreach ($providers as $key => $value) {
             if ($type === $key) {
-                if (isset($config["callback"])) {
-                    $provider = new $value($config["callback"]);
+                if (isset($config[$type]["callback"])) {
+                    $provider = new $value($config[$type]["callback"]);
                 } else {
                     $provider = new $value($config[$type]);
                 }

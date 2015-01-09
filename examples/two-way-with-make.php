@@ -11,34 +11,41 @@ use Revolve\Assistant\Task\TaskInterface;
 $make = new Make();
 
 $messenger = $make->messenger([
-    "provider" => "memcached",
+    "provider" => "iron",
     "memcached" => [
+        "namespace" => "assistant",
         "servers" => [
             ["127.0.0.1", 11211],
         ],
+    ],
+    "iron" => [
         "namespace" => "assistant",
+        "token" => getenv("IRON_TOKEN"),
+        "project" => getenv("IRON_PROJECT"),
     ],
 ]);
 
 $task = $make->task([
     "provider" => "gearman",
-    "callback" => function (TaskInterface $task) use ($messenger) {
-        $task->writeTo($messenger, "start", time());
+    "gearman" => [
+        "callback" => function (TaskInterface $task) use ($messenger) {
+            $task->writeTo($messenger, "start", time());
 
-        print "writing start\n";
+            print "writing start\n";
 
-        foreach (range(1, 5) as $tick) {
-            sleep(1);
+            foreach (range(1, 5) as $tick) {
+                sleep(1);
 
-            $task->writeTo($messenger, "tick", $tick);
+                $task->writeTo($messenger, "tick", $tick);
 
-            print "writing tick {$tick}\n";
-        }
+                print "writing tick {$tick}\n";
+            }
 
-        $task->writeTo($messenger, "complete", time());
+            $task->writeTo($messenger, "complete", time());
 
-        print "writing complete\n";
-    },
+            print "writing complete\n";
+        },
+    ],
 ]);
 
 $task->addListener("start", function (Event $event, $time) {
