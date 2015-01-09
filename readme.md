@@ -42,11 +42,13 @@ $messenger = $make->messenger([
 
 $task = $make->task([
     "provider" => "gearman",
-    "callback" => function(TaskInterface $task) use ($messenger) {
-        print "see this in the worker output";
+    "gearman" => [
+        "closure" => function(TaskInterface $task) use ($messenger) {
+            print "see this in the worker output";
 
-        $task->writeTo($messenger, "output", "see this in the client output");
-    },
+            $task->writeTo($messenger, "output", "see this in the client output");
+        },
+    ],
 ]);
 
 $task->addListener("output", function(Event $event, $message) {

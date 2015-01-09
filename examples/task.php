@@ -2,26 +2,33 @@
 
 require "../vendor/autoload.php";
 
-use Revolve\Assistant\Provider\Gearman\Task;
-use Revolve\Assistant\Provider\Memcached\Messenger;
+use Revolve\Assistant\Make;
 
-$messenger = new Messenger([
-    "namespace" => "assistant",
-    "servers" => [
-        ["127.0.0.1", 11211],
+$make = new Make();
+
+$messenger = $make->messenger([
+    "provider" => "memcached",
+    "memcached" => [
+        "namespace" => "assistant",
+        "servers" => [
+            ["127.0.0.1", 11211],
+        ],
     ],
 ]);
 
-$messenger->connect();
+$task = $make->task([
+    "provider" => "gearman",
+    "gearman" => [
+        "closure" => function () use ($messenger) {
+            print "hi!";
+        },
+    ],
+]);
 
-$task = new Task(function () use ($messenger) {
-    print "hi!";
-});
+var_dump($task->getCode());
+var_dump($task->getVariables());
 
-// var_dump($task->getCode());
-// var_dump($task->getVariables());
-//
-// $variables = $task->getVariables();
-//
-// $messenger = $variables["messenger"];
-// var_dump($messenger->read());
+$variables = $task->getVariables();
+
+$messenger = $variables["messenger"];
+var_dump($messenger->read());

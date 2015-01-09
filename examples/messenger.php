@@ -2,31 +2,39 @@
 
 require "../vendor/autoload.php";
 
-use Revolve\Assistant\Provider\Memcached\Messenger;
+use Revolve\Assistant\Make;
 
-$messenger = new Messenger([
-    "servers" => [
-        ["127.0.0.1", 11211],
+$make = new Make();
+
+$messenger = $make->messenger([
+    "provider" => "memcached",
+    "memcached" => [
+        "namespace" => "assistant",
+        "servers" => [
+            ["127.0.0.1", 11211],
+        ],
     ],
-    "namespace" => "assistant",
+    "iron" => [
+        "namespace" => "assistant",
+        "token" => getenv("IRON_TOKEN"),
+        "project" => getenv("IRON_PROJECT"),
+    ],
 ]);
 
-$messenger->connect();
+$messenger = unserialize(serialize($messenger));
 
-// $messenger = unserialize(serialize($messenger));
-//
-// var_dump($messenger->read());
-//
-// $messenger->write("foo");
-// $messenger->write("bar");
-// $messenger->write("baz");
-//
-// var_dump($messenger->read());
-//
-// $messenger->remove("foo");
-// $messenger->remove("bar");
-// $messenger->remove("baz");
-//
-// var_dump($messenger->read());
-//
-// $messenger->disconnect();
+var_dump($messenger->read());
+
+$messenger->write("foo");
+$messenger->write("bar");
+$messenger->write("baz");
+
+var_dump($messenger->read());
+
+$messenger->remove("foo");
+$messenger->remove("bar");
+$messenger->remove("baz");
+
+var_dump($messenger->read());
+
+$messenger->disconnect();

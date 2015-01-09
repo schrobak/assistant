@@ -10,7 +10,7 @@ $task = $make->task([
     "provider" => "gearman",
     "gearman" => [
         "closure" => function () {
-            print "one-way task\n";
+            print "fire-and-forget task\n";
         },
     ],
 ]);
