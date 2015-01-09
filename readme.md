@@ -154,7 +154,7 @@ The examples use infinite loops, and these are blocking. For optimal results, yo
 ## Roadmap
 
 - Add tests
-- Add `MessengerInterface` providers: IronMQ, Filesystem
+- Add `MessengerInterface` providers: Filesystem, ZeroMQ
 - Add `TaskInterface`/`ClientInterface`/`WorkerInterface` providers: IronWorker, pThreads
 - Add documentation
 
