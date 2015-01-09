@@ -10,7 +10,8 @@
     ],
     "require": {
         "league/event": "1.*",
-        "jeremeamia/superclosure": "1.*"
+        "jeremeamia/superclosure": "1.*",
+        "revolvephp/container": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
