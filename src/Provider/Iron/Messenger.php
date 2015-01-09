@@ -67,8 +67,6 @@ class Messenger extends QueueMessenger implements ConnectionInterface
 
         $namespace = $this->config["namespace"];
 
-        $items = [];
-
         while ($item = $this->iron->getMessage($namespace)) {
             $this->messages[$item->id] = $item->body;
         }
