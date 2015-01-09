@@ -10,9 +10,7 @@
     ],
     "require": {
         "league/event": "1.*",
-        "doctrine/cache": "1.*",
-        "jeremeamia/superclosure": "1.*",
-        "iron-io/iron_mq": "1.*"
+        "jeremeamia/superclosure": "1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
@@ -23,5 +21,9 @@
             "Revolve\\Assistant\\": "src",
             "Revolve\\Assistant\\Test\\": "tests"
         }
+    },
+    "suggest": {
+        "iron-io/iron_mq": "Required for Iron\\Messenger (1.*)",
+        "doctrine/cache": "Required for Memcached\\Messenger (1.*)"
     }
 }
