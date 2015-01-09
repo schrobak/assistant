@@ -8,10 +8,13 @@ use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
+use Revolve\Container\ContainerAwareInterface;
+use Revolve\Container\ContainerAwareTrait;
 
-class Client extends AbstractClient implements ConnectionInterface
+class Client extends AbstractClient implements ConnectionInterface, ContainerAwareInterface
 {
     use ConnectionTrait;
+    use ContainerAwareTrait;
 
     /**
      * @var GearmanClient

@@ -8,10 +8,13 @@ use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\CacheMessenger;
+use Revolve\Container\ContainerAwareInterface;
+use Revolve\Container\ContainerAwareTrait;
 
-class Messenger extends CacheMessenger implements ConnectionInterface
+class Messenger extends CacheMessenger implements ConnectionInterface, ContainerAwareInterface
 {
     use ConnectionTrait;
+    use ContainerAwareTrait;
 
     /**
      * @var Memcached

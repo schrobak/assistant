@@ -9,10 +9,13 @@ use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\Worker as AbstractWorker;
+use Revolve\Container\ContainerAwareInterface;
+use Revolve\Container\ContainerAwareTrait;
 
-class Worker extends AbstractWorker implements ConnectionInterface
+class Worker extends AbstractWorker implements ConnectionInterface, ContainerAwareInterface
 {
     use ConnectionTrait;
+    use ContainerAwareTrait;
 
     /**
      * @var GearmanWorker

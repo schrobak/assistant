@@ -7,10 +7,13 @@ use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
 use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\QueueMessenger;
+use Revolve\Container\ContainerAwareInterface;
+use Revolve\Container\ContainerAwareTrait;
 
-class Messenger extends QueueMessenger implements ConnectionInterface
+class Messenger extends QueueMessenger implements ConnectionInterface, ContainerAwareInterface
 {
     use ConnectionTrait;
+    use ContainerAwareTrait;
 
     /**
      * @var IronMQ

@@ -44,6 +44,7 @@ class MakeTest extends Test
     protected function getNewGearmanClientMock()
     {
         $client = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Client");
+        $client->shouldReceive("setContainer");
         $client->shouldReceive("setConfig");
         $client->shouldReceive("connect");
 
@@ -116,6 +117,7 @@ class MakeTest extends Test
     protected function getNewGearmanWorkerMock()
     {
         $worker = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Worker");
+        $worker->shouldReceive("setContainer");
         $worker->shouldReceive("setConfig");
         $worker->shouldReceive("connect");
 
@@ -207,11 +209,12 @@ class MakeTest extends Test
      */
     protected function getNewMemcachedMessengerMock()
     {
-        $memcached = $this->mock("Revolve\\Assistant\\Provider\\Memcached\\Messenger");
-        $memcached->shouldReceive("setConfig");
-        $memcached->shouldReceive("connect");
+        $messenger = $this->mock("Revolve\\Assistant\\Provider\\Memcached\\Messenger");
+        $messenger->shouldReceive("setContainer");
+        $messenger->shouldReceive("setConfig");
+        $messenger->shouldReceive("connect");
 
-        return $memcached;
+        return $messenger;
     }
 
     /**
@@ -219,10 +222,11 @@ class MakeTest extends Test
      */
     protected function getNewIronMessengerMock()
     {
-        $iron = $this->mock("Revolve\\Assistant\\Provider\\Iron\\Messenger");
-        $iron->shouldReceive("setConfig");
-        $iron->shouldReceive("connect");
+        $messenger = $this->mock("Revolve\\Assistant\\Provider\\Iron\\Messenger");
+        $messenger->shouldReceive("setContainer");
+        $messenger->shouldReceive("setConfig");
+        $messenger->shouldReceive("connect");
 
-        return $iron;
+        return $messenger;
     }
 }

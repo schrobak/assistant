@@ -107,6 +107,10 @@ class Make implements ContainerAwareInterface
 
                 $reflection = new ReflectionClass($provider);
 
+                if ($this->isContainer($reflection)) {
+                    $provider->setContainer($this->container);
+                }
+
                 if ($this->isConfig($reflection)) {
                     $provider->setConfig($config[$type]);
                 }
@@ -125,6 +129,18 @@ class Make implements ContainerAwareInterface
         $title = ucfirst($type);
 
         throw new ProviderException("{$title} provider not recognised");
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isContainer(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Container\\ContainerAwareInterface"
+        );
     }
 
     /**
