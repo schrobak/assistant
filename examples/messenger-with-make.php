@@ -23,18 +23,18 @@ $messenger = $make->messenger([
 
  $messenger = unserialize(serialize($messenger));
 
- var_dump($messenger->read());
-
- $messenger->write("foo");
- $messenger->write("bar");
- $messenger->write("baz");
-
- var_dump($messenger->read());
-
- $messenger->remove("foo");
- $messenger->remove("bar");
- $messenger->remove("baz");
-
- var_dump($messenger->read());
-
- $messenger->disconnect();
+// var_dump($messenger->read());
+//
+// $messenger->write("foo");
+// $messenger->write("bar");
+// $messenger->write("baz");
+//
+// var_dump($messenger->read());
+//
+// $messenger->remove("foo");
+// $messenger->remove("bar");
+// $messenger->remove("baz");
+//
+// var_dump($messenger->read());
+//
+// $messenger->disconnect();
