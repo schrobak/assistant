@@ -5,7 +5,6 @@ namespace Revolve\Assistant;
 use Exception;
 use ReflectionClass;
 use Revolve\Assistant\Client\ClientInterface;
-use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\WorkerInterface;
@@ -59,6 +58,7 @@ class Make implements ContainerAwareInterface
     {
         if ($container === null) {
             $container = new Container();
+
             $this->bind($container);
         }
 
@@ -70,7 +70,7 @@ class Make implements ContainerAwareInterface
      */
     protected function bind(ContainerInterface $container)
     {
-        $bindings = require(__DIR__ . "/bindings.php");
+        $bindings = require __DIR__."/bindings.php";
 
         foreach ($bindings as $key => $factory) {
             $container->bind($key, $factory);
@@ -92,13 +92,12 @@ class Make implements ContainerAwareInterface
     /**
      * @param array $providers
      * @param array $config
-     * @param bool  $isTask
      *
      * @return mixed
      *
      * @throws Exception
      */
-    protected function provider(array $providers, array $config, $isTask = false)
+    protected function provider(array $providers, array $config)
     {
         $type = $config["provider"];
 
@@ -108,27 +107,14 @@ class Make implements ContainerAwareInterface
 
                 $reflection = new ReflectionClass($provider);
 
-                $isConfig = $reflection->implementsInterface(
-                    "Revolve\\Assistant\\Config\\ConfigInterface"
-                );
-
-                if ($isConfig) {
+                if ($this->isConfig($reflection)) {
                     $provider->setConfig($config[$type]);
                 }
 
-                $isCallback = $reflection->implementsInterface(
-                    "Revolve\\Assistant\\Callback\\CallbackInterface"
-                );
-
-                if ($isCallback) {
+                if ($this->isCallback($reflection)) {
                     $provider->setCallback($config[$type]["callback"]);
                 }
-
-                $isConnection = $reflection->implementsInterface(
-                    "Revolve\\Assistant\\Connection\\ConnectionInterface"
-                );
-
-                if ($isConnection) {
+                if ($this->isConnection($reflection)) {
                     $provider->connect();
                 }
 
@@ -136,7 +122,43 @@ class Make implements ContainerAwareInterface
             }
         }
 
-        throw new Exception("Unrecognised provider: {$type}");
+        throw new Exception("Unrecognised provider");
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isConfig(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\Config\\ConfigInterface"
+        );
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isCallback(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\Callback\\CallbackInterface"
+        );
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isConnection(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\Connection\\ConnectionInterface"
+        );
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Revolve\Assistant\Test;
 
-use Exception;
+use Mockery\MockInterface;
 use Revolve\Assistant\Make;
 use Revolve\Container\Container;
 use Revolve\Container\ContainerInterface;
@@ -12,15 +12,12 @@ class MakeTest extends Test
     /**
      * @test
      */
-    public function it_makes_and_connects_clients()
+    public function it_makes_clients()
     {
-        $client = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Client");
-        $client->shouldReceive("setConfig");
-        $client->shouldReceive("connect");
-
         $container = new Container();
-        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Client", function () use ($client) {
-            return $client;
+
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Client", function () {
+            return $this->getNewGearmanClientMock();
         });
 
         $make = $this->getNewMake($container);
@@ -35,10 +32,22 @@ class MakeTest extends Test
             ],
         ];
 
-        $this->it_makes_and_connects(
+        $this->it_makes(
             $make, $providers, $config, "client",
             "Revolve\\Assistant\\Client\\ClientInterface"
         );
+    }
+
+    /**
+     * @return MockInterface
+     */
+    protected function getNewGearmanClientMock()
+    {
+        $client = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Client");
+        $client->shouldReceive("setConfig");
+        $client->shouldReceive("connect");
+
+        return $client;
     }
 
     /**
@@ -61,7 +70,7 @@ class MakeTest extends Test
      * @param string $method
      * @param string $interface
      */
-    protected function it_makes_and_connects(Make $make, array $providers, array $config, $method, $interface)
+    protected function it_makes(Make $make, array $providers, array $config, $method, $interface)
     {
         foreach ($providers as $provider) {
             $config["provider"] = $provider;
@@ -75,15 +84,12 @@ class MakeTest extends Test
     /**
      * @test
      */
-    public function it_makes_and_connects_workers()
+    public function it_makes_workers()
     {
-        $worker = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Worker");
-        $worker->shouldReceive("setConfig");
-        $worker->shouldReceive("connect");
-
         $container = new Container();
-        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Worker", function () use ($worker) {
-            return $worker;
+
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Worker", function () {
+            return $this->getNewGearmanWorkerMock();
         });
 
         $make = $this->getNewMake($container);
@@ -98,24 +104,33 @@ class MakeTest extends Test
             ],
         ];
 
-        $this->it_makes_and_connects(
+        $this->it_makes(
             $make, $providers, $config, "worker",
             "Revolve\\Assistant\\Worker\\WorkerInterface"
         );
     }
 
     /**
+     * @return MockInterface
+     */
+    protected function getNewGearmanWorkerMock()
+    {
+        $worker = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Worker");
+        $worker->shouldReceive("setConfig");
+        $worker->shouldReceive("connect");
+
+        return $worker;
+    }
+
+    /**
      * @test
      */
-    public function it_makes_and_connects_tasks()
+    public function it_makes_tasks()
     {
-        $task = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Task");
-        $task->shouldReceive("setCallback");
-        $task->shouldReceive("connect");
-
         $container = new Container();
-        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Task", function () use ($task) {
-            return $task;
+
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Task", function () {
+            return $this->getNewGearmanTaskMock();
         });
 
         $make = $this->getNewMake($container);
@@ -132,33 +147,37 @@ class MakeTest extends Test
             ],
         ];
 
-        $this->it_makes_and_connects(
+        $this->it_makes(
             $make, $providers, $config, "task",
             "Revolve\\Assistant\\Task\\TaskInterface"
         );
     }
 
     /**
+     * @return MockInterface
+     */
+    protected function getNewGearmanTaskMock()
+    {
+        $task = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Task");
+        $task->shouldReceive("setCallback");
+        $task->shouldReceive("connect");
+
+        return $task;
+    }
+
+    /**
      * @test
      */
-    public function it_makes_and_connects_messengers()
+    public function it_makes_messengers()
     {
-        $memcached = $this->mock("Revolve\\Assistant\\Provider\\Memcached\\Messenger");
-        $memcached->shouldReceive("setConfig");
-        $memcached->shouldReceive("connect");
-
-        $iron = $this->mock("Revolve\\Assistant\\Provider\\Iron\\Messenger");
-        $iron->shouldReceive("setConfig");
-        $iron->shouldReceive("connect");
-
         $container = new Container();
 
-        $container->bind("Revolve\\Assistant\\Provider\\Memcached\\Messenger", function () use ($memcached) {
-            return $memcached;
+        $container->bind("Revolve\\Assistant\\Provider\\Memcached\\Messenger", function () {
+            return $this->getNewMemcachedMessengerMock();
         });
 
-        $container->bind("Revolve\\Assistant\\Provider\\Iron\\Messenger", function () use ($iron) {
-            return $iron;
+        $container->bind("Revolve\\Assistant\\Provider\\Iron\\Messenger", function () {
+            return $this->getNewIronMessengerMock();
         });
 
         $make = $this->getNewMake($container);
@@ -177,61 +196,33 @@ class MakeTest extends Test
             ],
         ];
 
-        $this->it_makes_and_connects(
+        $this->it_makes(
             $make, $providers, $config, "messenger",
             "Revolve\\Assistant\\Messenger\\MessengerInterface"
         );
     }
 
     /**
-     * @test
-     *
-     * @expectedException Exception
+     * @return MockInterface
      */
-    public function it_throws_exception_when_client_provider_not_found()
+    protected function getNewMemcachedMessengerMock()
     {
-        $this->it_throws_exception_when_not_found("client");
+        $memcached = $this->mock("Revolve\\Assistant\\Provider\\Memcached\\Messenger");
+        $memcached->shouldReceive("setConfig");
+        $memcached->shouldReceive("connect");
+
+        return $memcached;
     }
 
     /**
-     * @param string $method
+     * @return MockInterface
      */
-    protected function it_throws_exception_when_not_found($method)
+    protected function getNewIronMessengerMock()
     {
-        $make = new Make();
+        $iron = $this->mock("Revolve\\Assistant\\Provider\\Iron\\Messenger");
+        $iron->shouldReceive("setConfig");
+        $iron->shouldReceive("connect");
 
-        $make->{$method}([
-            "provider" => "foo",
-        ]);
-    }
-
-    /**
-     * @test
-     *
-     * @expectedException Exception
-     */
-    public function it_throws_exception_when_worker_provider_not_found()
-    {
-        $this->it_throws_exception_when_not_found("worker");
-    }
-
-    /**
-     * @test
-     *
-     * @expectedException Exception
-     */
-    public function it_throws_exception_when_task_provider_not_found()
-    {
-        $this->it_throws_exception_when_not_found("task");
-    }
-
-    /**
-     * @test
-     *
-     * @expectedException Exception
-     */
-    public function it_throws_exception_when_messenger_provider_not_found()
-    {
-        $this->it_throws_exception_when_not_found("messenger");
+        return $iron;
     }
 }
