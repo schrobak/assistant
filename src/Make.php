@@ -56,39 +56,39 @@ class Make
     /**
      * @param array $providers
      * @param array $config
+     * @param bool  $isTask
      *
      * @return mixed
-     *
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function provider(array $providers, array $config)
+    protected function provider(array $providers, array $config, $isTask = false)
     {
         $type = $config["provider"];
 
         foreach ($providers as $key => $value) {
             if ($type === $key) {
-                if (isset($config[$type]["callback"])) {
+                if ($isTask) {
                     $provider = new $value($config[$type]["callback"]);
                 } else {
                     $provider = new $value($config[$type]);
-                }
 
-                $reflection = new ReflectionClass($provider);
+                    $reflection = new ReflectionClass($provider);
 
-                $isConnection = $reflection->implementsInterface(
-                    "Revolve\\Assistant\\Connection\\ConnectionInterface"
-                );
+                    $isConnection = $reflection->implementsInterface(
+                        "Revolve\\Assistant\\Connection\\ConnectionInterface"
+                    );
 
-                if ($isConnection) {
-                    /** @var ConnectionInterface $provider */
-                    $provider->connect();
+                    if ($isConnection) {
+                        /** @var ConnectionInterface $provider */
+                        $provider->connect();
+                    }
                 }
 
                 return $provider;
             }
         }
 
-        throw new Exception("Unrecognised driver");
+        throw new Exception("Unrecognised provider: {$type}");
     }
 
     /**
@@ -100,7 +100,7 @@ class Make
      */
     public function task(array $config)
     {
-        return $this->provider($this->tasks, $config);
+        return $this->provider($this->tasks, $config, true);
     }
 
     /**
