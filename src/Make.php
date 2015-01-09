@@ -5,10 +5,10 @@ namespace Revolve\Assistant;
 use Exception;
 use ReflectionClass;
 use Revolve\Assistant\Client\ClientInterface;
+use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\WorkerInterface;
-use Revolve\Assistant\Connection\ConnectionInterface;
 
 class Make
 {
@@ -37,6 +37,7 @@ class Make
      * @var array
      */
     protected $messengers = [
+        "iron" => "Revolve\\Assistant\\Provider\\Iron\\Messenger",
         "memcached" => "Revolve\\Assistant\\Provider\\Memcached\\Messenger",
     ];
 
