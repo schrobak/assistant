@@ -3,10 +3,10 @@
 namespace Revolve\Assistant\Provider\Memcached;
 
 use Doctrine\Common\Cache\MemcachedCache;
-use Exception;
 use Memcached;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
+use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\CacheMessenger;
 
 class Messenger extends CacheMessenger implements ConnectionInterface
@@ -58,7 +58,7 @@ class Messenger extends CacheMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function read()
     {
@@ -70,7 +70,7 @@ class Messenger extends CacheMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function write($message)
     {
@@ -82,7 +82,7 @@ class Messenger extends CacheMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function remove($message)
     {

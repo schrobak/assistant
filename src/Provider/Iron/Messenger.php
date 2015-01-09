@@ -2,10 +2,10 @@
 
 namespace Revolve\Assistant\Provider\Iron;
 
-use Exception;
 use IronMQ;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
+use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Messenger\QueueMessenger;
 
 class Messenger extends QueueMessenger implements ConnectionInterface
@@ -59,7 +59,7 @@ class Messenger extends QueueMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function read()
     {
@@ -77,7 +77,7 @@ class Messenger extends QueueMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function write($message)
     {
@@ -97,7 +97,7 @@ class Messenger extends QueueMessenger implements ConnectionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws Exception
+     * @throws ConnectionException
      */
     public function remove($message)
     {

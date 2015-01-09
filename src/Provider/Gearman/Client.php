@@ -6,6 +6,7 @@ use GearmanClient;
 use Revolve\Assistant\Client\Client as AbstractClient;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
+use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
 
 class Client extends AbstractClient implements ConnectionInterface
@@ -19,6 +20,8 @@ class Client extends AbstractClient implements ConnectionInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws ConnectionException
      */
     public function handle(TaskInterface $task)
     {

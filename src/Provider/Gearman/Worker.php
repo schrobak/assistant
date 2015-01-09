@@ -6,6 +6,7 @@ use GearmanJob;
 use GearmanWorker;
 use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Connection\ConnectionTrait;
+use Revolve\Assistant\Exception\ConnectionException;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\Worker as AbstractWorker;
 
@@ -28,6 +29,8 @@ class Worker extends AbstractWorker implements ConnectionInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws ConnectionException
      */
     public function run()
     {

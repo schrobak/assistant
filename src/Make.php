@@ -2,9 +2,9 @@
 
 namespace Revolve\Assistant;
 
-use Exception;
 use ReflectionClass;
 use Revolve\Assistant\Client\ClientInterface;
+use Revolve\Assistant\Exception\ProviderException;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\WorkerInterface;
@@ -82,7 +82,7 @@ class Make implements ContainerAwareInterface
      *
      * @return ClientInterface
      *
-     * @throws Exception
+     * @throws ProviderException
      */
     public function client(array $config)
     {
@@ -95,7 +95,7 @@ class Make implements ContainerAwareInterface
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws ProviderException
      */
     protected function provider(array $providers, array $config)
     {
@@ -122,7 +122,9 @@ class Make implements ContainerAwareInterface
             }
         }
 
-        throw new Exception("Unrecognised provider");
+        $title = ucfirst($type);
+
+        throw new ProviderException("{$title} provider not recognised");
     }
 
     /**
@@ -166,7 +168,7 @@ class Make implements ContainerAwareInterface
      *
      * @return TaskInterface
      *
-     * @throws Exception
+     * @throws ProviderException
      */
     public function task(array $config)
     {
@@ -178,7 +180,7 @@ class Make implements ContainerAwareInterface
      *
      * @return WorkerInterface
      *
-     * @throws Exception
+     * @throws ProviderException
      */
     public function worker(array $config)
     {
@@ -190,7 +192,7 @@ class Make implements ContainerAwareInterface
      *
      * @return MessengerInterface
      *
-     * @throws Exception
+     * @throws ProviderException
      */
     public function messenger(array $config)
     {

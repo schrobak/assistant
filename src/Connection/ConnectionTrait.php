@@ -2,8 +2,8 @@
 
 namespace Revolve\Assistant\Connection;
 
-use Exception;
 use ReflectionClass;
+use Revolve\Assistant\Exception\ConnectionException;
 
 trait ConnectionTrait
 {
@@ -32,18 +32,14 @@ trait ConnectionTrait
     abstract public function connect();
 
     /**
-     * @throws Exception
+     * @throws ConnectionException
      */
     protected function ensureConnected()
     {
         $reflection = new ReflectionClass($this);
 
-        $isConnection = $reflection->implementsInterface(
-            "Revolve\\Assistant\\Connection\\ConnectionInterface"
-        );
-
-        if ($isConnection and !$this->isConnected()) {
-            throw new Exception("You need to connect first!");
+        if ($this->isConnection($reflection) and !$this->isConnected()) {
+            throw new ConnectionException("You need to connect first!");
         }
     }
 
@@ -53,5 +49,17 @@ trait ConnectionTrait
     public function isConnected()
     {
         return $this->isConnected;
+    }
+
+    /**
+     * @param ReflectionClass $reflection
+     *
+     * @return bool
+     */
+    protected function isConnection(ReflectionClass $reflection)
+    {
+        return $reflection->implementsInterface(
+            "Revolve\\Assistant\\Connection\\ConnectionInterface"
+        );
     }
 }
