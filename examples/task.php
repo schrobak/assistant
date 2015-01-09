@@ -6,10 +6,10 @@ use Revolve\Assistant\Provider\Gearman\Task;
 use Revolve\Assistant\Provider\Memcached\Messenger;
 
 $messenger = new Messenger([
+    "namespace" => "assistant",
     "servers" => [
         ["127.0.0.1", 11211],
     ],
-    "namespace" => "assistant",
 ]);
 
 $messenger->connect();

@@ -1,7 +1,5 @@
 <?php
 
-// For this to work, you need to have memcached and worker.php running
-
 require "../vendor/autoload.php";
 
 use League\Event\Event;
@@ -63,10 +61,10 @@ $task->addListener("complete", function (Event $event, $time) {
 $client = $make->client([
     "provider" => "gearman",
     "gearman" => [
+        "namespace" => "assistant",
         "servers" => [
             ["127.0.0.1", 4730],
         ],
-        "namespace" => "assistant",
     ]
 ]);
 
