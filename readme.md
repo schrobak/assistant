@@ -38,6 +38,11 @@ $messenger = $make->messenger([
             ["127.0.0.1", 11211],
         ],
     ],
+    "iron" => [
+        "namespace" => "assistant",
+        "token" => getenv("IRON_TOKEN"),
+        "project" => getenv("IRON_PROJECT"),
+    ],
 ]);
 
 $task = $make->task([
