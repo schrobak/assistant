@@ -9,9 +9,15 @@ use Revolve\Assistant\Connection\ConnectionInterface;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use Revolve\Assistant\Task\TaskInterface;
 use Revolve\Assistant\Worker\WorkerInterface;
+use Revolve\Container\Container;
+use Revolve\Container\ContainerAwareInterface;
+use Revolve\Container\ContainerAwareTrait;
+use Revolve\Container\ContainerInterface;
 
-class Make
+class Make implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var array
      */
@@ -42,6 +48,36 @@ class Make
     ];
 
     /**
+     * @var bool
+     */
+    protected $isBound = false;
+
+    /**
+     * @param null|ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container = null)
+    {
+        if ($container === null) {
+            $container = new Container();
+            $this->bind($container);
+        }
+
+        $this->container = $container;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     */
+    protected function bind(ContainerInterface $container)
+    {
+        $bindings = require(__DIR__ . "/bindings.php");
+
+        foreach ($bindings as $key => $factory) {
+            $container->bind($key, $factory);
+        }
+    }
+
+    /**
      * @param array $config
      *
      * @return ClientInterface
@@ -59,7 +95,8 @@ class Make
      * @param bool  $isTask
      *
      * @return mixed
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     protected function provider(array $providers, array $config, $isTask = false)
     {
@@ -67,21 +104,32 @@ class Make
 
         foreach ($providers as $key => $value) {
             if ($type === $key) {
-                if ($isTask) {
-                    $provider = new $value($config[$type]["callback"]);
-                } else {
-                    $provider = new $value($config[$type]);
+                $provider = $this->container->resolve($value);
 
-                    $reflection = new ReflectionClass($provider);
+                $reflection = new ReflectionClass($provider);
 
-                    $isConnection = $reflection->implementsInterface(
-                        "Revolve\\Assistant\\Connection\\ConnectionInterface"
-                    );
+                $isConfig = $reflection->implementsInterface(
+                    "Revolve\\Assistant\\Config\\ConfigInterface"
+                );
 
-                    if ($isConnection) {
-                        /** @var ConnectionInterface $provider */
-                        $provider->connect();
-                    }
+                if ($isConfig) {
+                    $provider->setConfig($config[$type]);
+                }
+
+                $isCallback = $reflection->implementsInterface(
+                    "Revolve\\Assistant\\Callback\\CallbackInterface"
+                );
+
+                if ($isCallback) {
+                    $provider->setCallback($config[$type]["callback"]);
+                }
+
+                $isConnection = $reflection->implementsInterface(
+                    "Revolve\\Assistant\\Connection\\ConnectionInterface"
+                );
+
+                if ($isConnection) {
+                    $provider->connect();
                 }
 
                 return $provider;

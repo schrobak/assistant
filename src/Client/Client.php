@@ -2,11 +2,12 @@
 
 namespace Revolve\Assistant\Client;
 
-use Revolve\Assistant\ConfigTrait;
+use Revolve\Assistant\Config\ConfigInterface;
+use Revolve\Assistant\Config\ConfigTrait;
 use Revolve\Assistant\Messenger\MessengerInterface;
 use SplObjectStorage;
 
-abstract class Client implements ClientInterface
+abstract class Client implements ClientInterface, ConfigInterface
 {
     use ConfigTrait;
 
@@ -21,11 +22,13 @@ abstract class Client implements ClientInterface
     protected $emitted = [];
 
     /**
-     * @param array $config
+     * @param null|array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = null)
     {
-        $this->setConfig($config);
+        if ($config !== null) {
+            $this->setConfig($config);
+        }
 
         $this->tasks = new SplObjectStorage();
     }

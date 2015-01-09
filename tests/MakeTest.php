@@ -2,105 +2,73 @@
 
 namespace Revolve\Assistant\Test;
 
-use ReflectionClass;
-use Revolve\Assistant\Connection\ConnectionInterface;
+use Exception;
 use Revolve\Assistant\Make;
+use Revolve\Container\Container;
+use Revolve\Container\ContainerInterface;
 
 class MakeTest extends Test
 {
-    /**
-     * @var array
-     */
-    protected $clients = [
-        "gearman",
-    ];
-
-    /**
-     * @var array
-     */
-    protected $tasks = [
-        "gearman",
-    ];
-
-    /**
-     * @var array
-     */
-    protected $workers = [
-        "gearman",
-    ];
-
-    /**
-     * @var array
-     */
-    protected $messengers = [
-        "iron",
-        "memcached",
-    ];
-
-    /**
-     * @var array
-     */
-    protected $config = [
-        "gearman" => [
-            "namespace" => "assistant",
-            "servers" => [
-                ["127.0.0.1", 4730],
-            ],
-        ],
-        "memcached" => [
-            "namespace" => "assistant",
-            "servers" => [
-                ["127.0.0.1", 11211],
-            ],
-        ],
-        "iron" => [
-            "namespace" => "assistant",
-        ],
-    ];
-
-    public function setUp()
-    {
-        $this->config["gearman"]["callback"] = function () {
-            print "hello";
-        };
-
-        $this->config["iron"]["token"] = getenv("IRON_TOKEN");
-        $this->config["iron"]["project"] = getenv("IRON_PROJECT");
-    }
-
     /**
      * @test
      */
     public function it_makes_and_connects_clients()
     {
+        $client = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Client");
+        $client->shouldReceive("setConfig");
+        $client->shouldReceive("connect");
+
+        $container = new Container();
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Client", function () use ($client) {
+            return $client;
+        });
+
+        $make = $this->getNewMake($container);
+
+        $providers = [
+            "gearman",
+        ];
+
+        $config = [
+            "gearman" => [
+                // nothing to see...
+            ],
+        ];
+
         $this->it_makes_and_connects(
-            $this->clients, "client", "Revolve\\Assistant\\Client\\ClientInterface"
+            $make, $providers, $config, "client",
+            "Revolve\\Assistant\\Client\\ClientInterface"
         );
     }
 
     /**
+     * @param ContainerInterface $container
+     *
+     * @return Make
+     */
+    protected function getNewMake(ContainerInterface $container)
+    {
+        $make = new Make();
+        $make->setContainer($container);
+
+        return $make;
+    }
+
+    /**
+     * @param Make   $make
      * @param array  $providers
+     * @param array  $config
      * @param string $method
      * @param string $interface
      */
-    protected function it_makes_and_connects(array $providers, $method, $interface)
+    protected function it_makes_and_connects(Make $make, array $providers, array $config, $method, $interface)
     {
-        $make = new Make();
-
         foreach ($providers as $provider) {
-            $config = $this->config;
             $config["provider"] = $provider;
 
-            $client = $make->{$method}($config);
+            $provider = $make->{$method}($config);
 
-            $this->assertInstanceOf($interface, $client);
-
-            $reflection = new ReflectionClass($client);
-
-            if ($reflection->implementsInterface("Revolve\\Assistant\\Connection\\ConnectionInterface")) {
-                /** @var $client ConnectionInterface */
-                $this->assertTrue($client->isConnected());
-            }
+            $this->assertInstanceOf($interface, $provider);
         }
     }
 
@@ -109,8 +77,30 @@ class MakeTest extends Test
      */
     public function it_makes_and_connects_workers()
     {
+        $worker = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Worker");
+        $worker->shouldReceive("setConfig");
+        $worker->shouldReceive("connect");
+
+        $container = new Container();
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Worker", function () use ($worker) {
+            return $worker;
+        });
+
+        $make = $this->getNewMake($container);
+
+        $providers = [
+            "gearman",
+        ];
+
+        $config = [
+            "gearman" => [
+                // nothing to see...
+            ],
+        ];
+
         $this->it_makes_and_connects(
-            $this->workers, "worker", "Revolve\\Assistant\\Worker\\WorkerInterface"
+            $make, $providers, $config, "worker",
+            "Revolve\\Assistant\\Worker\\WorkerInterface"
         );
     }
 
@@ -119,8 +109,32 @@ class MakeTest extends Test
      */
     public function it_makes_and_connects_tasks()
     {
+        $task = $this->mock("Revolve\\Assistant\\Provider\\Gearman\\Task");
+        $task->shouldReceive("setCallback");
+        $task->shouldReceive("connect");
+
+        $container = new Container();
+        $container->bind("Revolve\\Assistant\\Provider\\Gearman\\Task", function () use ($task) {
+            return $task;
+        });
+
+        $make = $this->getNewMake($container);
+
+        $providers = [
+            "gearman",
+        ];
+
+        $config = [
+            "gearman" => [
+                "callback" => function () {
+                    print "hello";
+                },
+            ],
+        ];
+
         $this->it_makes_and_connects(
-            $this->tasks, "task", "Revolve\\Assistant\\Task\\TaskInterface"
+            $make, $providers, $config, "task",
+            "Revolve\\Assistant\\Task\\TaskInterface"
         );
     }
 
@@ -129,13 +143,50 @@ class MakeTest extends Test
      */
     public function it_makes_and_connects_messengers()
     {
+        $memcached = $this->mock("Revolve\\Assistant\\Provider\\Memcached\\Messenger");
+        $memcached->shouldReceive("setConfig");
+        $memcached->shouldReceive("connect");
+
+        $iron = $this->mock("Revolve\\Assistant\\Provider\\Iron\\Messenger");
+        $iron->shouldReceive("setConfig");
+        $iron->shouldReceive("connect");
+
+        $container = new Container();
+
+        $container->bind("Revolve\\Assistant\\Provider\\Memcached\\Messenger", function () use ($memcached) {
+            return $memcached;
+        });
+
+        $container->bind("Revolve\\Assistant\\Provider\\Iron\\Messenger", function () use ($iron) {
+            return $iron;
+        });
+
+        $make = $this->getNewMake($container);
+
+        $providers = [
+            "memcached",
+            "iron",
+        ];
+
+        $config = [
+            "memcached" => [
+                // nothing to see...
+            ],
+            "iron" => [
+                // nothing to see...
+            ],
+        ];
+
         $this->it_makes_and_connects(
-            $this->messengers, "messenger", "Revolve\\Assistant\\Messenger\\MessengerInterface"
+            $make, $providers, $config, "messenger",
+            "Revolve\\Assistant\\Messenger\\MessengerInterface"
         );
     }
 
     /**
      * @test
+     *
+     * @expectedException Exception
      */
     public function it_throws_exception_when_client_provider_not_found()
     {
@@ -147,8 +198,6 @@ class MakeTest extends Test
      */
     protected function it_throws_exception_when_not_found($method)
     {
-        $this->setExpectedException("Exception");
-
         $make = new Make();
 
         $make->{$method}([
@@ -158,6 +207,8 @@ class MakeTest extends Test
 
     /**
      * @test
+     *
+     * @expectedException Exception
      */
     public function it_throws_exception_when_worker_provider_not_found()
     {
@@ -166,6 +217,8 @@ class MakeTest extends Test
 
     /**
      * @test
+     *
+     * @expectedException Exception
      */
     public function it_throws_exception_when_task_provider_not_found()
     {
@@ -174,6 +227,8 @@ class MakeTest extends Test
 
     /**
      * @test
+     *
+     * @expectedException Exception
      */
     public function it_throws_exception_when_messenger_provider_not_found()
     {
